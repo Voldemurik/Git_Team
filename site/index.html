@@ -1,16 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Командная игра</title>
+  <title>Раскопки памяти</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <main id="game">
-    <h1>Здесь появится игра</h1>
-    <p>Реализацию выполняет разработчик по TASK.md.</p>
+  <main class="app">
+    <header class="top">
+      <h1>Раскопки памяти</h1>
+      <p class="sub">Вскройте участки раскопа и найдите все пары артефактов, пока не закончился грант.</p>
+    </header>
+
+    <section class="hud" aria-live="off">
+      <div class="stat"><span class="stat-label">Грант (время)</span><span id="timer" class="stat-value">90</span></div>
+      <div class="stat"><span class="stat-label">Найдено пар</span><span id="pairs" class="stat-value">0 / 8</span></div>
+      <div class="stat"><span class="stat-label">Счёт</span><span id="score" class="stat-value">0</span></div>
+    </section>
+
+    <section id="board" class="board" aria-label="Участки раскопа"></section>
   </main>
+
+  <div id="overlay" class="overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="result-title">
+      <h2 id="result-title"></h2>
+      <p id="result-text"></p>
+      <button id="again" class="btn" type="button">Играть снова</button>
+    </div>
+  </div>
+
   <script src="./script.js"></script>
 </body>
 </html>

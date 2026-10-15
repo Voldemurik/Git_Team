@@ -1,10 +1,94 @@
-body {
-  margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
+:root {
+  --soil: #2a2019;
+  --soil-2: #3a2c21;
+  --sand: #e3cfa8;
+  --ochre: #c98a2b;
+  --patina: #3f9482;
+  --patina-dark: #1f5a4e;
+  --ink: #1d150f;
+  --radius: 10px;
 }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--soil);
+  background-image: radial-gradient(circle at 20% 10%, #3d2e22 0, transparent 55%);
+  color: var(--sand);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.4;
+}
+.app { width: min(94vw, 540px); margin: 0 auto; padding: 20px 0 32px; }
+.top { text-align: center; margin-bottom: 14px; }
+h1 { margin: 0 0 4px; font-size: clamp(1.6rem, 6vw, 2.2rem); letter-spacing: .02em; color: var(--ochre); }
+.sub { margin: 0; font-size: .95rem; opacity: .8; }
 
-#game {
-  max-width: 960px;
-  margin: 0 auto;
+.hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.stat { background: var(--soil-2); border: 1px solid #54402f; border-radius: var(--radius); padding: 8px 6px; text-align: center; }
+.stat-label { display: block; font-size: .72rem; opacity: .75; }
+.stat-value { display: block; font-size: 1.5rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+#timer.low { color: #e8734a; }
+
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(6px, 2vw, 12px); }
+.card {
+  position: relative; aspect-ratio: 1; padding: 0; border: 0; background: none;
+  perspective: 600px; cursor: pointer; font: inherit; color: inherit;
+}
+.card:focus-visible { outline: 3px solid var(--ochre); outline-offset: 3px; border-radius: var(--radius); }
+.inner {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transition: transform .45s ease;
+}
+.card.open .inner, .card.found .inner { transform: rotateY(180deg); }
+.face {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.front {
+  background:
+    linear-gradient(rgba(0,0,0,.18) 1px, transparent 1px) 0 0 / 100% 25%,
+    linear-gradient(90deg, rgba(0,0,0,.18) 1px, transparent 1px) 0 0 / 25% 100%,
+    #6b4a30;
+  border: 2px solid #8a6342;
+  box-shadow: inset 0 0 18px rgba(0,0,0,.35);
+}
+.front::after { content: "×"; font-size: clamp(1.4rem, 6vw, 2rem); color: rgba(227,207,168,.45); }
+.card:not(.open):not(.found):hover .front { border-color: var(--ochre); }
+.back {
+  background: var(--sand); color: var(--ink); transform: rotateY(180deg);
+  border: 2px solid var(--ochre);
+}
+.emoji { font-size: clamp(1.8rem, 9vw, 3rem); line-height: 1; }
+.name { margin-top: 4px; font-size: clamp(.6rem, 2.4vw, .8rem); }
+.card.found .back { background: #cfe3d6; border-color: var(--patina); box-shadow: 0 0 0 2px var(--patina-dark) inset; }
+.card.found .back::after {
+  content: "найдено"; position: absolute; bottom: 3px; font-size: clamp(.45rem, 1.8vw, .62rem);
+  color: var(--patina-dark); font-weight: bold;
+}
+.card.found { cursor: default; }
+.card.found.pulse .inner { animation: pulse .5s ease; }
+@keyframes pulse { 50% { transform: rotateY(180deg) scale(1.08); } }
+
+.overlay {
+  position: fixed; inset: 0; background: rgba(20,13,8,.78);
+  display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10;
+}
+.overlay[hidden] { display: none; }
+.dialog {
+  background: var(--sand); color: var(--ink); border: 3px solid var(--ochre);
+  border-radius: 14px; padding: 24px; text-align: center; width: min(100%, 380px);
+}
+.dialog h2 { margin: 0 0 8px; font-size: 1.6rem; }
+.dialog p { margin: 0 0 18px; font-size: 1.05rem; }
+.dialog.win h2 { color: var(--patina-dark); }
+.dialog.lose h2 { color: #9a3b1c; }
+.btn {
+  font: inherit; font-weight: bold; font-size: 1.05rem; padding: 10px 24px; cursor: pointer;
+  background: var(--ink); color: var(--sand); border: 0; border-radius: var(--radius);
+}
+.btn:hover { background: var(--patina-dark); }
+.btn:focus-visible { outline: 3px solid var(--ochre); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .inner { transition: none; }
+  .card.found.pulse .inner { animation: none; }
 }
