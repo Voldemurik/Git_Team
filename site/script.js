@@ -22,7 +22,7 @@
   var pairsEl = document.getElementById('pairs');
   var scoreEl = document.getElementById('score');
   var overlayEl = document.getElementById('overlay');
-  var dialogEl = overlayEl.querySelector('.dialog');
+  var dialogEl = document.getElementById('dialog');
   var titleEl = document.getElementById('result-title');
   var textEl = document.getElementById('result-text');
   var againBtn = document.getElementById('again');
@@ -63,7 +63,7 @@
     return noiseBuf;
   }
 
-  // Шелест бумаги 
+  // Шелест бумаги / страницы: мягкий шум без резкой атаки, с «шуршанием» огибающей
   function playFlip() {
     var ctx = getAudio();
     if (!ctx) return;
@@ -85,11 +85,11 @@
 
     var g = ctx.createGain();
     g.gain.setValueAtTime(0, t0);
-    g.gain.linearRampToValueAtTime(0.01, t0 + 0.06);   // плавное нарастание
+    g.gain.linearRampToValueAtTime(0.10, t0 + 0.06);   // плавное нарастание
     g.gain.linearRampToValueAtTime(0.05, t0 + 0.11);   // шуршание
-    g.gain.linearRampToValueAtTime(0.000001, t0 + 0.16);
+    g.gain.linearRampToValueAtTime(0.13, t0 + 0.16);
     g.gain.linearRampToValueAtTime(0.04, t0 + 0.22);
-    g.gain.linearRampToValueAtTime(0.5, t0 + dur);       // плавное затухание
+    g.gain.linearRampToValueAtTime(0, t0 + dur);       // плавное затухание
 
     src.connect(bp); bp.connect(lp); lp.connect(g); g.connect(ctx.destination);
     src.start(t0);
@@ -126,12 +126,16 @@
   }
 
   function makeDeck() {
-    var base = ARTIFACTS.concat(ARTIFACTS);
-    var deck, sig;
-    do {
-      deck = shuffle(base);
+    var deck = shuffle(ARTIFACTS.concat(ARTIFACTS));
+    var sig = deck.map(function (a) { return a.id; }).join(',');
+    if (sig === layout) {
+      // Тот же расклад, что в прошлом раунде: меняем местами две разные карточки.
+      // Без цикла, поэтому зависание исключено; расклад гарантированно меняется.
+      var j = 1;
+      while (deck[j].id === deck[0].id) j++;
+      var t = deck[0]; deck[0] = deck[j]; deck[j] = t;
       sig = deck.map(function (a) { return a.id; }).join(',');
-    } while (sig === layout);
+    }
     layout = sig;
     return deck;
   }
@@ -212,6 +216,8 @@
     clearInterval(tickId);
     clearTimeout(flipBackId);
     flipBackId = null;
+    first = null;
+    locked = false;
 
     if (won) {
       var bonus = timeLeft * BONUS_PER_SEC;
